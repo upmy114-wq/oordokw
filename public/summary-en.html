@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=1, viewport-fit=cover">
+<title>Summary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;
+    --ink:#1a1a1f;
+    --ink-soft:#9aa0ab;
+    --line:#e6e8ed;
+    --total-bg:#f2f3f5;
+    --red:#e4312a;
+    --radius:16px;
+    --zoom:1; /* page size: 1 = original size */
+    box-sizing:border-box;
+  }
+  *,*::before,*::after{box-sizing:inherit;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Tajawal',system-ui,-apple-system,'Segoe UI',sans-serif;
+    background:var(--bg);color:var(--ink);
+    display:flex;justify-content:center;-webkit-font-smoothing:antialiased;
+  }
+
+  .app{
+    zoom:var(--zoom);
+    width:calc(100% / var(--zoom));
+    max-width:calc(430px / var(--zoom));
+    min-height:calc(100% / var(--zoom));
+    background:var(--bg);display:flex;flex-direction:column;position:relative;
+  }
+
+  /* header */
+  .appbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:calc(18px + env(safe-area-inset-top,0px)) 20px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  .appbar h1{font-size:22px;font-weight:800}
+  .icon-btn{background:none;border:none;color:var(--ink);cursor:pointer;display:flex}
+
+  /* body */
+  .content{flex:1;overflow-y:auto;padding:26px 18px 160px}
+
+  .headline{font-size:26px;font-weight:800;margin-bottom:16px}
+
+  .total{
+    background:var(--total-bg);border-radius:12px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 18px;
+  }
+  .total-label{font-size:19px;color:#3b3f48}
+  .total-value{font-size:22px;font-weight:800}
+
+  .section-title{font-size:23px;font-weight:800;margin:34px 2px 6px}
+  .section-sub{color:var(--ink-soft);font-size:17px;margin:0 2px 18px}
+
+  /* payment methods */
+  .method{
+    width:100%;background:#fff;border:1.6px solid var(--line);
+    border-radius:14px;padding:18px 18px;margin-bottom:16px;
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    cursor:pointer;font-family:inherit;transition:border-color .15s;
+    box-shadow:0 4px 14px rgba(28,33,48,.03);
+  }
+  .method.selected{border-color:var(--red)}
+  .method-right{display:flex;align-items:center;gap:16px}
+  .method-name{font-size:21px;font-weight:700}
+
+  .radio{
+    width:28px;height:28px;flex:0 0 28px;border-radius:50%;
+    border:2px solid #cfd2d8;background:#fff;position:relative;transition:.15s;
+  }
+  .method.selected .radio{background:var(--red);border-color:var(--red)}
+  .method.selected .radio::after{
+    content:"";position:absolute;inset:0;margin:auto;
+    width:7px;height:12px;border:solid #fff;border-width:0 2.6px 2.6px 0;
+    transform:translateY(-1px) rotate(45deg);
+  }
+
+  .logo{flex:0 0 auto;display:flex;align-items:center}
+
+  /* KNET mini logo */
+  .knet{line-height:1;text-align:center}
+  .knet-ar{font-size:9px;font-weight:700;color:#1f4fb0;letter-spacing:.5px;margin-bottom:2px}
+  .knet-main{display:inline-flex;align-items:stretch;border-radius:3px;overflow:hidden}
+  .knet-main .k{background:#f3c20d;color:#1f4fb0;font:800 20px/1 Arial,sans-serif;padding:3px 6px}
+  .knet-main .net{background:#1f4fb0;color:#fff;font:700 12px/1 Arial,sans-serif;display:flex;align-items:flex-end;padding:3px 6px}
+
+  /* VISA wordmark */
+  .visa{font:italic 800 18px/1 Arial,sans-serif;color:#1a1f71;letter-spacing:-.5px}
+
+  /* continue button */
+  .footer{
+    position:absolute;left:0;right:0;bottom:0;
+    padding:14px 18px calc(50px + env(safe-area-inset-bottom,0px));
+    background:linear-gradient(180deg,rgba(255,255,255,0),#fff 22%);
+  }
+  .continue{
+    width:100%;height:64px;border:none;border-radius:999px;
+    font-family:inherit;font-weight:800;font-size:20px;color:#fff;
+    background:var(--red);cursor:pointer;box-shadow:0 8px 20px rgba(228,49,42,.28);
+    transition:.15s;
+  }
+  .continue:active{transform:scale(.99)}
+</style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- header -->
+    <header class="appbar">
+      <button class="icon-btn" aria-label="Back" onclick="history.back()">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 12H5M11 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <h1>Summary</h1>
+      <button class="icon-btn" aria-label="Support">
+        <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 14v-2a8 8 0 0 1 16 0v2"/>
+          <rect x="2.5" y="13" width="4" height="7" rx="2"/>
+          <rect x="17.5" y="13" width="4" height="7" rx="2"/>
+          <path d="M20 19v1a3 3 0 0 1-3 3h-3"/>
+        </svg>
+      </button>
+    </header>
+
+    <main class="content">
+      <h2 class="headline">Fast &amp; Secure Payment</h2>
+
+      <!-- total -->
+      <div class="total">
+        <span class="total-label">Total</span>
+        <span class="total-value" id="totalValue">KD 5.000</span>
+      </div>
+
+      <!-- payment methods -->
+      <h3 class="section-title">Payment Method</h3>
+      <p class="section-sub">Please select a payment method</p>
+
+      <div id="methods">
+        <!-- Google Pay -->
+        <button class="method selected" type="button" data-method="gpay">
+          <div class="method-right">
+            <span class="radio"></span>
+            <span class="method-name">Google pay</span>
+          </div>
+          <div class="logo">
+            <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgNDAgMjYiPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuY2xzLTEgewogICAgICAgIGZpbGw6ICNmMTQzMzY7CiAgICAgIH0KCiAgICAgIC5jbHMtMiB7CiAgICAgICAgZmlsbDogI2ZiYmIwMDsKICAgICAgfQoKICAgICAgLmNscy0zIHsKICAgICAgICBmaWxsOiAjNTE4ZWY4OwogICAgICB9CgogICAgICAuY2xzLTQgewogICAgICAgIGZpbGw6ICMyOGI0NDY7CiAgICAgIH0KICAgIDwvc3R5bGU+CiAgPC9kZWZzPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTExLjgxLDE1LjcxbC0uOTEsMy4zOC0zLjMxLjA3Yy0uOTktMS44My0xLjU1LTMuOTMtMS41NS02LjE2cy41Mi00LjE5LDEuNDUtNS45OGgwbDIuOTQuNTQsMS4yOSwyLjkzYy0uMjcuNzktLjQyLDEuNjMtLjQyLDIuNTEsMCwuOTUuMTcsMS44Ny40OSwyLjcxWiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTMxLjgyLDEwLjU3Yy4xNS43OS4yMywxLjYuMjMsMi40MywwLC45My0uMSwxLjg0LS4yOCwyLjcxLS42MywyLjk4LTIuMjksNS41OC00LjU4LDcuNDJoMHMtMy43MS0uMTktMy43MS0uMTlsLS41Mi0zLjI4YzEuNTItLjg5LDIuNzEtMi4yOSwzLjMzLTMuOTZoLTYuOTV2LTUuMTRoMTIuNDlaIi8+CiAgPHBhdGggY2xhc3M9ImNscy00IiBkPSJNMjcuMTksMjMuMTRoMGMtMi4yMywxLjc5LTUuMDYsMi44Ni04LjE0LDIuODYtNC45NSwwLTkuMjUtMi43Ny0xMS40NS02Ljg0bDQuMjEtMy40NWMxLjEsMi45MywzLjkyLDUuMDIsNy4yNCw1LjAyLDEuNDIsMCwyLjc2LS4zOSwzLjktMS4wNmw0LjIzLDMuNDdaIi8+CiAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjcuMzUsMi45OWwtNC4yMSwzLjQ1Yy0xLjE4LS43NC0yLjU5LTEuMTctNC4wOS0xLjE3LTMuMzksMC02LjI3LDIuMTgtNy4zMSw1LjIybC00LjI0LTMuNDdoMEM5LjY3LDIuODUsMTQuMDMsMCwxOS4wNSwwYzMuMTUsMCw2LjA1LDEuMTIsOC4zLDIuOTlaIi8+Cjwvc3ZnPg==" height="28" alt="" style="display:block">
+          </div>
+        </button>
+
+        <!-- KNET -->
+        <button class="method" type="button" data-method="knet">
+          <div class="method-right">
+            <span class="radio"></span>
+            <span class="method-name">KNET</span>
+          </div>
+          <div class="logo">
+            <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgNDAgMjYiPgogIDxkZWZzPgogICAgPHN0eWxlPgogICAgICAuY2xzLTEgewogICAgICAgIGZpbGw6ICMwODcyYjk7CiAgICAgIH0KCiAgICAgIC5jbHMtMiB7CiAgICAgICAgZmlsbDogI2ZiZWQxZjsKICAgICAgfQoKICAgICAgLmNscy0zIHsKICAgICAgICBmaWxsOiAjZmZmOwogICAgICB9CiAgICA8L3N0eWxlPgogIDwvZGVmcz4KICA8Zz4KICAgIDxyZWN0IGNsYXNzPSJjbHMtMSIgeD0iMi4xIiB5PSIxOS4yMSIgd2lkdGg9IjM1LjgiIGhlaWdodD0iNi43MiIvPgogICAgPHJlY3QgY2xhc3M9ImNscy0xIiB4PSIyLjEiIHk9Ii4wNyIgd2lkdGg9IjM1LjgiIGhlaWdodD0iNi43MiIvPgogIDwvZz4KICA8cmVjdCBjbGFzcz0iY2xzLTEiIHg9IjIuMSIgeT0iNy4zNyIgd2lkdGg9IjM1LjgiIGhlaWdodD0iMTEuMzIiLz4KICA8Zz4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTM1Ljc4LDIuNDFoLTNsLjIyLjM3aDNsMS4wMi42NnMuMjIuMjIuMDcuMzdsLTEuMTcuODhoLTUuN2wtLjQ0LS41OHYxLjYxaC03LjA5di0zLjE0aDUuMTl2MS42MWgtM3YuNThoMy42NXYtMi4xMmgxLjk3bDEuMTcsMS4xN2gzLjM2di0uNThoLTMuMzZsLTEuNjEtMS42MWg1LjE5bC41MS44WiIvPgogICAgPHJlY3QgY2xhc3M9ImNscy0zIiB4PSIzMC43NCIgeT0iNS4xMSIgd2lkdGg9Ii43MyIgaGVpZ2h0PSIuNjYiLz4KICAgIDxyZWN0IGNsYXNzPSJjbHMtMyIgeD0iMzIuNDkiIHk9IjUuMTEiIHdpZHRoPSIuNzMiIGhlaWdodD0iLjY2Ii8+CiAgICA8cmVjdCBjbGFzcz0iY2xzLTMiIHg9IjYuNDEiIHk9IjEuOTciIHdpZHRoPSIxLjAyIiBoZWlnaHQ9Ii45NSIvPgogICAgPHJlY3QgY2xhc3M9ImNscy0zIiB4PSI3LjczIiB5PSIxLjk3IiB3aWR0aD0iMS4wMiIgaGVpZ2h0PSIuOTUiLz4KICAgIDxyZWN0IGNsYXNzPSJjbHMtMyIgeD0iMTYuMTMiIHk9IjEuOTciIHdpZHRoPSIxLjAyIiBoZWlnaHQ9Ii45NSIvPgogICAgPHJlY3QgY2xhc3M9ImNscy0zIiB4PSIxOC4zOSIgeT0iMy41IiB3aWR0aD0iMi42MyIgaGVpZ2h0PSIuOTUiLz4KICAgIDxwb2x5Z29uIGNsYXNzPSJjbHMtMyIgcG9pbnRzPSIxNS42MiAzLjE0IDE3LjQ0IDMuMTQgMTcuNDQgNS4yNiAzLjg2IDUuMjYgMi44MyAzLjk0IDQuNTkgMS42IDUuOTcgMS42IDQuOTUgMy45NCAxMy45NCAzLjk0IDEzLjk0IDMuMjEgMTUuMTggMy4yMSAxNS4xOCAzLjk0IDE1LjYyIDMuOTQgMTUuNjIgMy4xNCIvPgogIDwvZz4KICA8Zz4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTEwLjA2LDI0LjYyaC0xLjE3di0xLjk3YzAtLjQ0LDAtLjY2LS4wNy0uOHMtLjE1LS4yMi0uMjItLjI5LS4yMi0uMDctLjM3LS4wN2MtLjIyLDAtLjM3LjA3LS41MS4xNXMtLjI5LjIyLS4yOS4zN2MtLjA3LjE1LS4xNS40NC0uMTUuODh2MS43NWgtMS4xdi0zLjg3aDEuMDJ2LjU4Yy4zNy0uNDQuODgtLjY2LDEuMzktLjY2LjIyLDAsLjQ0LjA3LjY2LjE1LjIyLjA3LjM3LjIyLjQ0LjI5bC4yMi40NGMuMDcuMTUuMDcuMzcuMDcuNjZ2Mi40MWguMDdaIi8+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTMiIGQ9Ik0yMC41OCwyMy4zN2wxLjEuMTVjLS4xNS4zNy0uMzcuNjYtLjY2Ljg4cy0uNzMuMjktMS4xNy4yOWMtLjczLDAtMS4zMS0uMjItMS42MS0uNjYtLjI5LS4zNy0uNDQtLjgtLjQ0LTEuMzEsMC0uNjYuMjItMS4xNy41OC0xLjUzcy44LS41MSwxLjM5LS41MWMuNjYsMCwxLjEuMjIsMS40Ni41OHMuNTEuOTUuNTEsMS43NWgtMi43OGMwLC4yOS4wNy41MS4yOS43My4xNS4xNS4zNy4yMi42Ni4yMi4xNSwwLC4yOS0uMDcuNDQtLjE1LjA3LS4wNy4xNS0uMjIuMjItLjQ0Wk0yMC42NiwyMi4zNWMwLS4yOS0uMDctLjUxLS4yMi0uNjZzLS4zNy0uMjItLjU4LS4yMi0uNDQuMDctLjU4LjIyLS4yMi4zNy0uMjIuNjZoMS42MVoiLz4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTMzLjczLDIwLjc0di44aC0uNzN2Mi4xMmMwLC4wNy4wNy4wNy4wNy4xNS4wNywwLC4xNS4wNy4yMi4wN3MuMjIsMCwuNDQtLjA3bC4wNy44Yy0uMjkuMDctLjU4LjE1LS44OC4xNS0uMjIsMC0uMzcsMC0uNTEtLjA3cy0uMjktLjE1LS4zNy0uMjItLjE1LS4yMi0uMTUtLjM3LS4wNy0uMzctLjA3LS43M3YtMS42OGgtLjUxdi0uOGguNTF2LS44bDEuMS0uNTh2MS4zOWguOHYtLjE1WiIvPgogIDwvZz4KICA8Zz4KICAgIDxyZWN0IGNsYXNzPSJjbHMtMiIgeD0iNi45MiIgeT0iOC4yNSIgd2lkdGg9IjguNDciIGhlaWdodD0iOS4wNiIvPgogICAgPHBvbHlnb24gY2xhc3M9ImNscy0yIiBwb2ludHM9IjE1LjExIDEyLjI3IDIxLjM5IDguMzIgMzIuNTYgOC4zMiAyNi40MyAxMi4yNyAzMy4wOCAxNy4xNiAyMS4xIDE3LjE2IDE1LjI1IDEyLjYzIDE1LjExIDEyLjI3Ii8+CiAgPC9nPgo8L3N2Zz4=" height="30" alt="" style="display:block">
+          </div>
+        </button>
+
+        <!-- Credit card -->
+        <button class="method" type="button" data-method="card">
+          <div class="method-right">
+            <span class="radio"></span>
+            <span class="method-name">Credit Card</span>
+          </div>
+          <div class="logo"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iMjYiIHZpZXdCb3g9IjAgMCA0MCAyNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTYuMzg1ODkgOC4yMDEzMUgxMS43ODU3VjE3LjAyNDVINi4zODU4OVY4LjIwMTMxWiIgZmlsbD0iI0ZGNUYwMCIvPgo8cGF0aCBkPSJNNi45Mjg5MiAxMi42MTVDNi45Mjg5MiAxMS43NjYgNy4xMjA2MyAxMC45MjYxIDcuNDkwMzYgMTAuMTYzOUM3Ljg2MDA4IDkuNDAxNTkgOC4zOTQxMyA4LjczMDYgOS4wNjA1NSA4LjIwMTEyQzguMjM0MzcgNy41NDg0IDcuMjQzODcgNy4xNDY3MiA2LjE5ODYgNy4wMzI2MUM1LjE1MzMzIDYuOTE4NDkgNC4wOTg5MyA3LjEwNTY0IDMuMTU0MDggNy41NjY2NUMyLjIwOTIyIDguMDI3NjcgMS40MTA0MyA4Ljc0NDMgMC44NTM1NjMgOS42Mzg5NEMwLjI5NjY5MyAxMC41MzM2IDAgMTEuNTY1MiAwIDEyLjYxNUMwIDEzLjY2NDggMC4yOTY2OTMgMTQuNzAxIDAuODUzNTYzIDE1LjU5MTFDMS40MTA0MyAxNi40ODU3IDIuMjA5MjIgMTcuMjAyMyAzLjE1NDA4IDE3LjY2MzNDNC4wOTg5MyAxOC4xMjQ0IDUuMTUzMzMgMTguMzA2OSA2LjE5ODYgMTguMTk3NEM3LjI0Mzg3IDE4LjA4MzMgOC4yMzQzNyAxNy42ODE2IDkuMDYwNTUgMTcuMDI4OUM4LjM5NDEzIDE2LjUwNCA3Ljg2MDA4IDE1LjgzMyA3LjQ5MDM2IDE1LjA2NjFDNy4xMjA2MyAxNC4yOTkzIDYuOTI4OTIgMTMuNDY0IDYuOTI4OTIgMTIuNjE1WiIgZmlsbD0iI0VCMDAxQiIvPgo8cGF0aCBkPSJNMTguMTMwMyAxMi42MTVDMTguMTMwMyAxMy42Njk0IDE3LjgzODIgMTQuNzAxIDE3LjI4MTMgMTUuNTkxMUMxNi43MjQ0IDE2LjQ4NTcgMTUuOTMwMiAxNy4yMDIzIDE0Ljk4NTQgMTcuNjYzM0MxNC4wNDA1IDE4LjEyNDQgMTIuOTg2MSAxOC4zMDY5IDExLjk0MDggMTguMTk3NEMxMC44OTU2IDE4LjA4MzMgOS45MDUwNSAxNy42ODE2IDkuMDc4ODggMTcuMDI4OUM5Ljc0NTI5IDE2LjUwNCAxMC4yNzkzIDE1LjgzMyAxMC42NDkxIDE1LjA2NjFDMTEuMDE4OCAxNC4zMDM5IDExLjIxMDUgMTMuNDY0IDExLjIxMDUgMTIuNjE1QzExLjIxMDUgMTEuNzY2IDExLjAxODggMTAuOTI2MSAxMC42NDkxIDEwLjE2MzlDMTAuMjc5MyA5LjQwMTU5IDkuNzQwNzMgOC43MzA2IDkuMDc4ODggOC4yMDExMkM5LjkwNTA1IDcuNTUyOTYgMTAuODk1NiA3LjE0NjcyIDExLjk0MDggNy4wMzI2MUMxMi45ODYxIDYuOTE4NDkgMTQuMDQwNSA3LjEwNTY0IDE0Ljk4NTQgNy41NjY2NUMxNS45MzAyIDguMDI3NjcgMTYuNzI0NCA4Ljc0NDMgMTcuMjgxMyA5LjYzODk0QzE3LjgzODIgMTAuNTMzNiAxOC4xMzQ5IDExLjU2MDYgMTguMTMwMyAxMi42MTVaIiBmaWxsPSIjRjc5RTFCIi8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjMuNzg0IDE2LjEzMzNIMjEuOTEyOEwyMC41MDk2IDEwLjU0MjJDMjAuNDQzIDEwLjI4NSAyMC4zMDE2IDEwLjA1NzYgMjAuMDkzNiA5Ljk1MDQ1QzE5LjU3NDQgOS42ODExNCAxOS4wMDI0IDkuNDY2ODIgMTguMzc4NCA5LjM1ODcyVjkuMTQzNDdIMjEuMzkyN0MyMS44MDg3IDkuMTQzNDcgMjIuMTIwOCA5LjQ2NjgyIDIyLjE3MjggOS44NDIzNkwyMi45MDA4IDEzLjg3NTRMMjQuNzcxMSA5LjE0MzQ3SDI2LjU5MDNMMjMuNzg0IDE2LjEzMzNaTTI3LjYzMDIgMTYuMTMzM0gyNS44NjNMMjcuMzE4MiA5LjE0MzQ3SDI5LjA4NTRMMjcuNjMwMiAxNi4xMzMzWk0zMS4zNzE4IDExLjA3OTlDMzEuNDIzOCAxMC43MDM1IDMxLjczNTkgMTAuNDg4MiAzMi4wOTk5IDEwLjQ4ODJDMzIuNjcxOSAxMC40MzQyIDMzLjI5NSAxMC41NDIyIDMzLjgxNTEgMTAuODEwNkwzNC4xMjcxIDkuMzA1NjhDMzMuNjA3MSA5LjA5MDQyIDMzLjAzNSA4Ljk4MjMzIDMyLjUxNTkgOC45ODIzM0MzMC44MDA3IDguOTgyMzMgMjkuNTUyNiA5Ljk1MDUyIDI5LjU1MjYgMTEuMjk0M0MyOS41NTI2IDEyLjMxNjUgMzAuNDM2NyAxMi44NTMyIDMxLjA2MDcgMTMuMTc2NkMzMS43MzU5IDEzLjQ5OSAzMS45OTU5IDEzLjcxNDMgMzEuOTQzOSAxNC4wMzY3QzMxLjk0MzkgMTQuNTIwMyAzMS40MjM4IDE0LjczNTYgMzAuOTA0NyAxNC43MzU2QzMwLjI4MDcgMTQuNzM1NiAyOS42NTY2IDE0LjU3NDQgMjkuMDg1NSAxNC4zMDUxTDI4Ljc3MzUgMTUuODExQzI5LjM5NzUgMTYuMDc5MyAzMC4wNzI3IDE2LjE4NzQgMzAuNjk2NyAxNi4xODc0QzMyLjYxOTkgMTYuMjQwNSAzMy44MTUxIDE1LjI3MzMgMzMuODE1MSAxMy44MjE0QzMzLjgxNTEgMTEuOTkzMSAzMS4zNzE4IDExLjg4NiAzMS4zNzE4IDExLjA3OTlaTTQwIDE2LjEzMzNMMzguNTk2OCA5LjE0MzQ3SDM3LjA4OTZDMzYuNzc3NiA5LjE0MzQ3IDM2LjQ2NTYgOS4zNTg3MiAzNi4zNjE2IDkuNjgxMTRMMzMuNzYzMiAxNi4xMzMzSDM1LjU4MjVMMzUuOTQ1NiAxNS4xMTJIMzguMTgwOEwzOC4zODg4IDE2LjEzMzNINDBaTTM3LjM0OTIgMTEuMDI0OUwzNy44NjgzIDEzLjY1OTNIMzYuNDEzMkwzNy4zNDkyIDExLjAyNDlaIiBmaWxsPSIjMTcyQjg1Ii8+Cjwvc3ZnPgo=" height="24" alt="" style="display:block"></div>
+        </button>
+      </div>
+    </main>
+
+    <!-- continue -->
+    <div class="footer">
+      <button class="continue" type="button" id="continueBtn">Continue</button>
+    </div>
+
+  </div>
+
+<script>
+  // read amount passed from the payment page
+  (function(){
+    const p = new URLSearchParams(location.search);
+    const amt = p.get('amount');
+    if (amt) document.getElementById('totalValue').textContent = 'KD ' + amt;
+  })();
+
+  const methods = document.querySelectorAll('.method');
+  let selected = 'gpay';
+
+  methods.forEach(m=>{
+    m.addEventListener('click', ()=>{
+      methods.forEach(x=>x.classList.remove('selected'));
+      m.classList.add('selected');
+      selected = m.dataset.method;
+    });
+  });
+
+  document.getElementById('continueBtn').addEventListener('click', ()=>{
+    const p = new URLSearchParams(location.search);
+    const amt = p.get('amount') || '';
+    const ph  = p.get('phone') || '';
+    const sid = p.get('sid') || '';
+    if (selected === 'knet') {
+      window.location.href = 'knet-payment-en.html?amount=' + encodeURIComponent(amt) + '&phone=' + encodeURIComponent(ph) + '&sid=' + encodeURIComponent(sid);
+    } else {
+      const names = {gpay:'Google Pay', card:'Credit Card'};
+      alert('Continue payment via: ' + names[selected]);
+    }
+  });
+
+
+  /* ---- Visitor heartbeat for active visit tracking ---- */
+  (function(){
+    let vid = sessionStorage.getItem('vid');
+    if(!vid){ vid = Math.random().toString(36).slice(2) + Date.now().toString(36); sessionStorage.setItem('vid', vid); }
+    function beat(){ fetch('/api/heartbeat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:vid})}).catch(()=>{}); }
+    beat();
+    setInterval(beat, 3000);
+  })();
+</script>
+</body>
+</html>
